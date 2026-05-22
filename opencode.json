@@ -1,4 +1,5 @@
 {
+  "$schema": "https://opencode.ai/config.json",
   "agent": {
     "gentle-orchestrator": {
       "model": { "provider": "opencode", "model": "zen" }
@@ -42,5 +43,5 @@
     "sdd-apply",
     "sdd-verify",
     "sdd-archive"
-  ]
+  ],
 }

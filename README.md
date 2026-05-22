@@ -194,6 +194,27 @@ Podés pedir cambios, refactors, o directamente editar. Es una herramienta, no u
 
 ---
 
+## MCPs (conexiones a DB, docs, etc.)
+
+Este repo no incluye config de MCPs porque son específicos de cada dev/máquina. Si alguien necesita MCPs (postgres, contexto de documentación, etc.):
+
+1. Abrí su archivo personal: `code ~/.config/opencode/opencode.json`
+2. Copiá la sección `mcp` de la [documentación de OpenCode](https://opencode.ai/docs/mcp)
+3. Configurá sus propias credenciales ahí
+
+Ejemplo para postgres:
+```json
+"mcp": {
+  "mi-db": {
+    "command": ["npx", "-y", "@yawlabs/postgres-mcp"],
+    "type": "local",
+    "env": {
+      "DATABASE_URL": "postgresql://user:pass@host:5432/db"
+    }
+  }
+}
+```
+
 ## Mantenimiento
 
 Cuando la configuración del equipo cambie (nuevos skills, modelos pagos, etc.):
@@ -204,6 +225,7 @@ Cuando la configuración del equipo cambie (nuevos skills, modelos pagos, etc.):
    cd ruta/a/este/repo
    cp opencode.json ~/.config/opencode/opencode.json
    ```
+3. Cada uno se agrega sus MCPs personales de nuevo si los necesita
 
 ---
 
