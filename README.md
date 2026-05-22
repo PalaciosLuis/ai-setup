@@ -14,17 +14,17 @@ Configuración estándar del equipo para desarrollar con IA estructurada. Esto n
 
 ## Instalación
 
-### Cualquier sistema
+### Requisito para Windows
 
-Elegí tu perfil y seguí las instrucciones.
+Los usuarios de Windows necesitan **Git Bash** (incluido con Git for Windows). Descargalo de https://git-scm.com si no lo tenés. El `setup.bat` lo detecta automáticamente y ejecuta `setup.sh`.
+
+Si no querés instalar Git Bash, el `setup.bat` usa PowerShell como fallback.
 
 ---
 
 ### Perfil A: Uso VS Code (no querés terminal)
 
-**1.** Abrí una terminal (PowerShell en Windows, o Terminal en macOS/Linux).
-
-**2.** Ejecutá el script de instalación:
+**1.** Ejecutá el script de instalación:
 
 **Linux / macOS:**
 ```bash
@@ -33,10 +33,11 @@ chmod +x setup.sh
 ./setup.sh
 ```
 
-**Windows:**
+**Windows (recomendado):**
 ```batch
-Hacé doble click en setup.bat  (o click derecho → Ejecutar como administrador)
+Hacé doble click en setup.bat
 ```
+El script detecta Git Bash y ejecuta todo automáticamente.
 
 **3.** Abrí VS Code, presioná `Ctrl+Shift+P`, buscá `OpenCode: Start Session`.
 
