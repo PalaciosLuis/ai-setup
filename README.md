@@ -34,9 +34,8 @@ chmod +x setup.sh
 ```
 
 **Windows:**
-```powershell
-cd ruta\a\este\repo
-.\setup.ps1
+```batch
+Hacé doble click en setup.bat  (o click derecho → Ejecutar como administrador)
 ```
 
 **3.** Abrí VS Code, presioná `Ctrl+Shift+P`, buscá `OpenCode: Start Session`.
@@ -53,12 +52,18 @@ Ejemplos: `/sdd-new "agregar endpoint GET /api/products"`, `/sdd-new "validar em
 
 ### Perfil B: Uso Cursor
 
-**1.** Abrí una terminal y ejecutá el script de instalación:
+**1.** Ejecutá el script de instalación:
 
+**Linux / macOS:**
 ```bash
 cd ruta/a/este/repo
-chmod +x setup.sh   # Linux/macOS
+chmod +x setup.sh
 ./setup.sh
+```
+
+**Windows:**
+```batch
+Hacé doble click en setup.bat
 ```
 
 **2.** Abrí Cursor.
@@ -75,7 +80,7 @@ Cursor ya reconoce los comandos SDD como agentes nativos. El asistente te va gui
 
 ### Perfil C: Uso Antigravity
 
-**1.** Abrí una terminal y ejecutá el script de instalación.
+**1.** Ejecutá el script de instalación (doble click en `setup.bat` en Windows, `./setup.sh` en Linux/macOS).
 
 **2.** En Antigravity, usá el chat de Mission Control con lenguaje natural:
 
@@ -89,7 +94,7 @@ El asistente arranca el workflow solo.
 
 ### Perfil D: Solo terminal / OpenCode
 
-**1.** Ejecutá el script de instalación.
+**1.** Ejecutá el script de instalación (doble click en `setup.bat` en Windows, `./setup.sh` en Linux/macOS).
 
 **2.** En la terminal, ejecutá:
 
