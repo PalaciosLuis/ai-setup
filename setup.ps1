@@ -10,6 +10,28 @@ $HomeDir = $env:USERPROFILE
 $BinDir = "$HomeDir\.opencode\bin"
 $ConfigDir = "$HomeDir\.config\opencode"
 
+# ── Helper: asegurar que scoop existe ──
+function Ensure-Scoop {
+    $scoop = Get-Command scoop -ErrorAction SilentlyContinue
+    if ($scoop) { return $true }
+
+    Write-Host "  Scoop no encontrado. Instalando..." -ForegroundColor Yellow
+    Write-Host "  Configurando ExecutionPolicy..." -ForegroundColor Yellow
+    try {
+        Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+        Write-Host "  Descargando e instalando scoop..." -ForegroundColor Yellow
+        irm get.scoop.sh | iex
+        # Scoop agrega su propio PATH, recargamos
+        $env:Path = [Environment]::GetEnvironmentVariable("Path", "User") + ";" + [Environment]::GetEnvironmentVariable("Path", "Machine")
+        return $true
+    } catch {
+        Write-Host "  ERROR: No se pudo instalar scoop. Instalalo manual:" -ForegroundColor Red
+        Write-Host "    Set-ExecutionPolicy RemoteSigned -Scope CurrentUser" -ForegroundColor Yellow
+        Write-Host '    irm get.scoop.sh | iex' -ForegroundColor Yellow
+        return $false
+    }
+}
+
 # ── Helper: instalar con scoop ──
 function Install-WithScoop {
     param($App, $Bucket, $Repo)
@@ -74,6 +96,11 @@ if (Test-Path "$CursorPath\cursor.cmd") {
 } else {
     Write-Host "  Agente: OpenCode (terminal)" -ForegroundColor Green
 }
+
+# ── Asegurar scoop ──
+Write-Host ""
+Write-Host "[Prep] Verificando scoop..." -ForegroundColor Yellow
+Ensure-Scoop | Out-Null
 
 # ── 1. Instalar OpenCode ──
 Write-Host ""

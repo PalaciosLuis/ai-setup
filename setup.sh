@@ -38,15 +38,28 @@ echo ""
 echo -e "  Sistema: ${GREEN}${OS}${NC}"
 echo -e "  Agente: ${GREEN}${AGENT}${NC}"
 
+# ── Helper: asegurar scoop instalado (solo Windows) ──
+ensure_scoop() {
+  if command -v scoop &>/dev/null; then
+    return 0
+  fi
+  echo -e "  Scoop no encontrado. Instalando..." >&2
+  echo -e "  Configurando ExecutionPolicy..." >&2
+  powershell -Command "Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force" 2>/dev/null || true
+  echo -e "  Descargando e instalando scoop..." >&2
+  powershell -Command "irm get.scoop.sh | iex" 2>/dev/null || true
+  # Scoop agrega su propio PATH, recargar desde registro
+  export PATH="$USERPROFILE/scoop/shims:$PATH"
+  command -v scoop &>/dev/null
+}
+
 # ── Helper: instalar con scoop (solo Windows) ──
 install_via_scoop() {
   local app="$1"   # "opencode" o "gentle-ai"
   local bucket="$2" # ej: "opencode" o "gentleman"
   local repo="$3"   # ej: "https://github.com/opencode-ai/scoop-bucket"
 
-  if ! command -v scoop &>/dev/null; then
-    return 1
-  fi
+  ensure_scoop || return 1
 
   if scoop list "$app" 2>/dev/null | grep -q "$app"; then
     echo -e "  ${GREEN}OK${NC} $app ya instalado via scoop"
