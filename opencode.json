@@ -1,0 +1,46 @@
+{
+  "agent": {
+    "gentle-orchestrator": {
+      "model": { "provider": "opencode", "model": "zen" }
+    },
+    "sdd-propose": {
+      "model": { "provider": "opencode", "model": "zen" }
+    },
+    "sdd-spec": {
+      "model": { "provider": "opencode", "model": "zen" }
+    },
+    "sdd-design": {
+      "model": { "provider": "opencode", "model": "zen" }
+    },
+    "sdd-tasks": {
+      "model": { "provider": "opencode", "model": "zen" }
+    },
+    "sdd-apply": {
+      "model": { "provider": "opencode", "model": "zen" }
+    },
+    "sdd-verify": {
+      "model": { "provider": "opencode", "model": "zen" }
+    }
+  },
+  "artifact_store": "openspec",
+  "execution_mode": "interactive",
+  "permissions": {
+    "dangerous_commands": "ask",
+    "allow_write": true,
+    "allowed_paths": ["."]
+  },
+  "delivery_strategy": "single-pr-default",
+  "chain_strategy": "stacked-to-main",
+  "review_budget_lines": 400,
+  "skills": [
+    "sdd-init",
+    "sdd-explore",
+    "sdd-propose",
+    "sdd-spec",
+    "sdd-design",
+    "sdd-tasks",
+    "sdd-apply",
+    "sdd-verify",
+    "sdd-archive"
+  ]
+}

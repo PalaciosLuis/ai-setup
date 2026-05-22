@@ -1,0 +1,7 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# No versionamos configs locales que el dev pueda personalizar
+# El opencode.json de este repo es la base, cada dev puede tener
+# el suyo con modelos diferentes sin contaminar el estándar
