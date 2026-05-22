@@ -33,11 +33,19 @@ chmod +x setup.sh
 ./setup.sh
 ```
 
-**Windows (recomendado):**
+**Windows (recomendado — doble click):**
 ```batch
 Hacé doble click en setup.bat
 ```
-El script detecta Git Bash y ejecuta todo automáticamente.
+El script detecta scoop o Git Bash y ejecuta todo automáticamente.
+
+**Windows (alternativo — PowerShell manual):**
+```powershell
+# Scoop es el metodo recomendado en Windows
+scoop bucket add opencode https://github.com/opencode-ai/scoop-bucket
+scoop bucket add gentleman https://github.com/Gentleman-Programming/scoop-bucket
+scoop install opencode gentle-ai
+```
 
 **3.** Abrí VS Code, presioná `Ctrl+Shift+P`, buscá `OpenCode: Start Session`.
 

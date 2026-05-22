@@ -31,7 +31,6 @@ detect_agent() {
 }
 AGENT=$(detect_agent)
 
-# ── Colores (sin acentos para compatibilidad) ──
 echo -e "${CYAN}================================================${NC}"
 echo -e "${CYAN}  Setup de asistente de desarrollo${NC}"
 echo -e "${CYAN}================================================${NC}"
@@ -39,90 +38,125 @@ echo ""
 echo -e "  Sistema: ${GREEN}${OS}${NC}"
 echo -e "  Agente: ${GREEN}${AGENT}${NC}"
 
-# ── Funcion: descargar binario ──
+# ── Helper: instalar con scoop (solo Windows) ──
+install_via_scoop() {
+  local app="$1"   # "opencode" o "gentle-ai"
+  local bucket="$2" # ej: "opencode" o "gentleman"
+  local repo="$3"   # ej: "https://github.com/opencode-ai/scoop-bucket"
+
+  if ! command -v scoop &>/dev/null; then
+    return 1
+  fi
+
+  if scoop list "$app" 2>/dev/null | grep -q "$app"; then
+    echo -e "  ${GREEN}OK${NC} $app ya instalado via scoop"
+    return 0
+  fi
+
+  echo -e "  Instalando $app via scoop..." >&2
+  scoop bucket add "$bucket" "$repo" 2>/dev/null || true
+  scoop install "$app" 2>/dev/null || return 1
+  return 0
+}
+
+# ── Helper: descargar binario directo (fallback) ──
 download_bin() {
-  local url="$1"
-  local dest="$2"
-  local name="$3"
-  echo -e "  Descargando ${name}..." >&2
+  local url="$1"; local dest="$2"; local name="$3"
+  echo -e "  Descargando ${name} (fallback)..." >&2
   if curl -fsSL "$url" -o "$dest"; then
     echo -e "  ${GREEN}OK${NC} ${name} descargado" >&2
     return 0
-  else
-    echo -e "  ${RED}ERROR${NC} No se pudo descargar ${name}" >&2
-    return 1
   fi
+  echo -e "  ${RED}ERROR${NC} No se pudo descargar ${name}" >&2
+  return 1
 }
 
 # ═══════════════════════════════════════
-#  INSTALACION
+#  1. OpenCode
 # ═══════════════════════════════════════
-
-# ── 1. Instalar OpenCode ──
 echo ""
 echo -e "${YELLOW}[1/3]${NC} Instalando OpenCode..."
 
 if command -v opencode &>/dev/null; then
   echo -e "  ${GREEN}OK${NC} OpenCode ya esta instalado"
 else
-  if $IS_WINDOWS; then
-    # Git Bash: descargar binario directo
-    BIN_DIR="$USERPROFILE/.opencode/bin"
-    mkdir -p "$BIN_DIR"
-    ZIP="$BIN_DIR/opencode.zip"
-    download_bin "https://github.com/opencode-ai/opencode/releases/latest/download/opencode-windows-amd64.zip" "$ZIP" "OpenCode"
-    unzip -o "$ZIP" -d "$BIN_DIR" 2>/dev/null
-    rm -f "$ZIP"
+  INSTALLED=false
 
-    # Agregar al PATH de Windows (no solo de Git Bash)
-    WIN_PATH="$(cygpath -w "$BIN_DIR")"
-    powershell -Command "[Environment]::SetEnvironmentVariable('Path', [Environment]::GetEnvironmentVariable('Path','User') + ';$WIN_PATH', 'User')" 2>/dev/null || true
-    export PATH="$PATH:$BIN_DIR"
-  elif [[ "$OS" == "macos" ]] && command -v brew &>/dev/null; then
-    brew install opencode-ai/tap/opencode
-  else
-    # Linux/macOS: install script oficial
-    curl -fsSL https://opencode.ai/install | bash 2>/dev/null || true
+  if $IS_WINDOWS; then
+    install_via_scoop "opencode" "opencode" "https://github.com/opencode-ai/scoop-bucket" && INSTALLED=true
   fi
 
-  if command -v opencode &>/dev/null; then
+  if ! $INSTALLED && [[ "$OS" == "macos" ]] && command -v brew &>/dev/null; then
+    brew install opencode-ai/tap/opencode && INSTALLED=true
+  fi
+
+  if ! $INSTALLED; then
+    if $IS_WINDOWS; then
+      # Fallback: descargar binario directo
+      BIN_DIR="$USERPROFILE/.opencode/bin"
+      mkdir -p "$BIN_DIR"
+      ZIP="$BIN_DIR/opencode.zip"
+      download_bin "https://github.com/opencode-ai/opencode/releases/latest/download/opencode-windows-amd64.zip" "$ZIP" "OpenCode"
+      unzip -o "$ZIP" -d "$BIN_DIR" 2>/dev/null && rm -f "$ZIP"
+      WIN_PATH="$(cygpath -w "$BIN_DIR")"
+      powershell -Command "[Environment]::SetEnvironmentVariable('Path', [Environment]::GetEnvironmentVariable('Path','User') + ';$WIN_PATH', 'User')" 2>/dev/null || true
+      export PATH="$PATH:$BIN_DIR"
+      INSTALLED=true
+    else
+      curl -fsSL https://opencode.ai/install | bash 2>/dev/null || true
+      command -v opencode &>/dev/null && INSTALLED=true
+    fi
+  fi
+
+  if $INSTALLED; then
     echo -e "  ${GREEN}OK${NC} OpenCode instalado"
   else
-    echo -e "  ${YELLOW}AVISO${NC} OpenCode no encontrado en PATH todavia."
-    echo -e "  Cerra y abri la terminal, o ejecuta: ${CYAN}export PATH=\$PATH:$BIN_DIR${NC}"
+    echo -e "  ${YELLOW}AVISO${NC} OpenCode no encontrado todavia."
   fi
 fi
 
-# ── 2. Instalar Gentle AI ──
+# ═══════════════════════════════════════
+#  2. Gentle AI
+# ═══════════════════════════════════════
 echo ""
 echo -e "${YELLOW}[2/3]${NC} Instalando Gentle AI..."
 
 if command -v gentle-ai &>/dev/null; then
   echo -e "  ${GREEN}OK${NC} Gentle AI ya esta instalado"
 else
-  if $IS_WINDOWS; then
-    BIN_DIR="${BIN_DIR:-$USERPROFILE/.opencode/bin}"
-    mkdir -p "$BIN_DIR"
-    ZIP="$BIN_DIR/gentle-ai.zip"
-    download_bin "https://github.com/Gentleman-Programming/gentle-ai/releases/latest/download/gentle-ai-windows-amd64.zip" "$ZIP" "Gentle AI"
-    unzip -o "$ZIP" -d "$BIN_DIR" 2>/dev/null
-    rm -f "$ZIP"
+  INSTALLED=false
 
-    WIN_PATH="$(cygpath -w "$BIN_DIR")"
-    powershell -Command "[Environment]::SetEnvironmentVariable('Path', [Environment]::GetEnvironmentVariable('Path','User') + ';$WIN_PATH', 'User')" 2>/dev/null || true
-    export PATH="$PATH:$BIN_DIR"
-  else
-    curl -fsSL https://gentle-ai.run/install | bash 2>/dev/null || true
+  if $IS_WINDOWS; then
+    install_via_scoop "gentle-ai" "gentleman" "https://github.com/Gentleman-Programming/scoop-bucket" && INSTALLED=true
   fi
 
-  if command -v gentle-ai &>/dev/null; then
+  if ! $INSTALLED; then
+    if $IS_WINDOWS; then
+      BIN_DIR="${BIN_DIR:-$USERPROFILE/.opencode/bin}"
+      mkdir -p "$BIN_DIR"
+      ZIP="$BIN_DIR/gentle-ai.zip"
+      download_bin "https://github.com/Gentleman-Programming/gentle-ai/releases/latest/download/gentle-ai-windows-amd64.zip" "$ZIP" "Gentle AI"
+      unzip -o "$ZIP" -d "$BIN_DIR" 2>/dev/null && rm -f "$ZIP"
+      WIN_PATH="$(cygpath -w "$BIN_DIR")"
+      powershell -Command "[Environment]::SetEnvironmentVariable('Path', [Environment]::GetEnvironmentVariable('Path','User') + ';$WIN_PATH', 'User')" 2>/dev/null || true
+      export PATH="$PATH:$BIN_DIR"
+      INSTALLED=true
+    else
+      curl -fsSL https://gentle-ai.run/install | bash 2>/dev/null || true
+      command -v gentle-ai &>/dev/null && INSTALLED=true
+    fi
+  fi
+
+  if $INSTALLED; then
     echo -e "  ${GREEN}OK${NC} Gentle AI instalado"
   else
-    echo -e "  ${YELLOW}AVISO${NC} Gentle AI no encontrado en PATH todavia."
+    echo -e "  ${YELLOW}AVISO${NC} Gentle AI no encontrado todavia."
   fi
 fi
 
-# ── 3. Configurar ──
+# ═══════════════════════════════════════
+#  3. Configurar
+# ═══════════════════════════════════════
 echo ""
 echo -e "${YELLOW}[3/3]${NC} Configurando..."
 
@@ -156,8 +190,8 @@ echo -e "${GREEN}================================================${NC}"
 echo ""
 
 if $IS_WINDOWS; then
-  echo -e "  ${YELLOW}IMPORTANTE: Cerra y volve a abrir Git Bash${NC}"
-  echo -e "  para que el PATH se actualice." 
+  echo -e "  ${YELLOW}IMPORTANTE: Cerra y volve a abrir la terminal${NC}"
+  echo -e "  para que el PATH se actualice."
   echo ""
 fi
 
