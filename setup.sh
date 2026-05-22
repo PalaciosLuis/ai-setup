@@ -155,7 +155,7 @@ else
       export PATH="$PATH:$BIN_DIR"
       INSTALLED=true
     else
-      curl -fsSL https://gentle-ai.run/install | bash 2>/dev/null || true
+      curl -fsSL https://raw.githubusercontent.com/Gentleman-Programming/gentle-ai/main/scripts/install.sh | bash 2>/dev/null || true
       command -v gentle-ai &>/dev/null && INSTALLED=true
     fi
   fi
